@@ -16,9 +16,9 @@
 #define DEVICE_ALIGNED_BYTES 64
 
 enum NoiseCancelling {
+  NC_OFF  = 0x00,
   NC_HIGH = 0x01,
   NC_LOW  = 0x03,
-  NC_OFF  = 0x00,
   NC_DNE  = 0xff,
   NC_UNKNOWN,
 };
@@ -51,15 +51,15 @@ enum PromptLanguage {
 };
 
 enum Pairing {
-  P_ON  = 0x01,
   P_OFF = 0x00,
+  P_ON  = 0x01,
   P_UNKNOWN,
 };
 
 enum DeviceStatus {
-  DS_THIS         = 0x03,
-  DS_CONNECTED    = 0x01,
   DS_DISCONNECTED = 0x00,
+  DS_CONNECTED    = 0x01,
+  DS_THIS         = 0x03,
 };
 
 enum DevicesConnected {
