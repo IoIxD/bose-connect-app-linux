@@ -17,7 +17,7 @@ void reverse_ba2str(const bdaddr_t *ba, char *str) {
 
 void reverse_str2ba(const char *str, bdaddr_t *ba) {
   if (bachk(str) < 0) {
-    memory_set(ba, 0, sizeof(*ba));
+    memset(ba, 0, sizeof(*ba));
     return;
   }
 

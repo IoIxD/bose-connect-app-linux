@@ -26,7 +26,7 @@ endif ()
 pkg_search_module(BLUEZ REQUIRED bluez)
 
 if (NOT BLUEZ_FOUND)
-    message(FATAL_ERROR "Please install `libbluetooth-dev`.")
+    message(FATAL_ERROR "Please install your distro's bluez development libraries.")
 elseif (NOT BLUEZ_VERSION)
     message(FATAL_ERROR "The version of Bluez is not correct: ${BLUEZ_VERSION}.")
 endif ()
@@ -37,6 +37,22 @@ link_directories(${BLUEZ_LIBRARIES})
 
 
 # ------------------------------------------------------
+# Check GTK4
+# ------------------------------------------------------
+pkg_search_module(GTK4 REQUIRED IMPORTED_TARGET gtk4)
+
+if (NOT GTK4_FOUND)
+    message(FATAL_ERROR "Please install your distro's GTK4 development libraries.")
+elseif (NOT GTK4_VERSION)
+    message(FATAL_ERROR "The version of GTK4 is not correct: ${GTK4_VERSION}.")
+endif ()
+
+pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
+include_directories(${GTK4_INCLUDE_DIR})
+link_directories(${GTK4_LIBRARIES})
+
+
+# ------------------------------------------------------
 # Add the executable.
 # ------------------------------------------------------
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -44,7 +60,8 @@ add_compile_definitions(PROGRAM_NAME="${PROJECT_NAME}")
 add_executable(
         ${PROJECT_NAME}
         main.c
-        main.h
+        library/bose.c
+        library/bose.h
         library/based.c
         library/based.h
         library/bluetooth.c

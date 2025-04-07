@@ -5,96 +5,60 @@
 #include <unistd.h>
 
 #include "based.h"
-#include "util.h"
+#include "bluetooth.h"
 
-#define ANY              0x00
-#define CN_BASE_PACK_LEN 4
-#define MAX_NAME_PACKAGE (CN_BASE_PACK_LEN + MAX_NAME_LEN - 1)
-#define GET_DEVICE_ID_SEND                                                     \
-  { 0x00, 0x03, 0x01, 0x00 }
-#define GET_DEVICE_ID_ACK                                                      \
-  { 0x00, 0x03, 0x03, 0x03 }
-#define GET_NAME_ACK                                                           \
-  { 0x01, 0x02, 0x03, ANY, 0x00 }
-#define GET_NAME_MASK                                                          \
-  { 0xff, 0xff, 0xff, 0x00, 0xff }
-#define SET_NAME_SEND                                                          \
-  { 0x01, 0x02, 0x02, ANY }
+#define ANY                0x00
+#define CN_BASE_PACK_LEN   4
+#define MAX_NAME_PACKAGE   (CN_BASE_PACK_LEN + MAX_NAME_LEN)
+#define GET_DEVICE_ID_SEND {0x00, 0x03, 0x01, 0x00}
+#define GET_DEVICE_ID_ACK  {0x00, 0x03, 0x03, 0x03}
+#define GET_NAME_ACK       {0x01, 0x02, 0x03, ANY, 0x00}
+#define GET_NAME_MASK      {0xff, 0xff, 0xff, 0x00, 0xff}
+#define SET_NAME_SEND      {0x01, 0x02, 0x02, ANY}
 #define GET_PROMPT_LANGUAGE_ACK                                                \
-  { 0x01, 0x03, 0x03, 0x05, ANY, 0x00, ANY, ANY, 0xde }
+  {0x01, 0x03, 0x03, 0x05, ANY, 0x00, ANY, ANY, 0xde}
 #define GET_PROMPT_LANGUAGE_MASK                                               \
-  { 0xff, 0xff, 0xff, 0xff, 0x00, 0xff, 0x00, 0x00, 0xff }
-#define SET_PROMPT_LANGUAGE_SEND                                               \
-  { 0x01, 0x03, 0x02, 0x01, ANY }
-#define GET_AUTO_OFF_ACK                                                       \
-  { 0x01, 0x04, 0x03, 0x01, ANY }
-#define GET_AUTO_OFF_MASK                                                      \
-  { 0xff, 0xff, 0xff, 0xff, 0x00 }
-#define SET_AUTO_OFF_SEND                                                      \
-  { 0x01, 0x04, 0x02, 0x01, ANY }
-#define GET_NOISE_CANCELLING_ACK                                               \
-  { 0x01, 0x06, 0x03, 0x02, ANY, 0x0b }
-#define GET_NOISE_CANCELLING_MASK                                              \
-  { 0xff, 0xff, 0xff, 0xff, 0x00, 0xff }
-#define SET_NOISE_CANCELLING_SEND                                              \
-  { 0x01, 0x06, 0x02, 0x01, ANY }
-#define NOISE_CANCELLING_14 0x4014
-#define NOISE_CANCELLING_20 0x4020
-#define NOISE_CANCELLING_0C 0x400c
-#define GET_DEVICE_STATUS_SEND                                                 \
-  { 0x01, 0x01, 0x05, 0x00 }
-#define GET_DEVICE_STATUS_ACK                                                  \
-  { 0x01, 0x01, 0x07, 0x00 }
-#define GET_FIRMWARE_VERSION_SEND                                              \
-  { 0x00, 0x05, 0x01, 0x00 }
-#define GET_FIRMWARE_VERSION_ACK                                               \
-  { 0x00, 0x05, 0x03, 0x05 }
-#define GET_SERIAL_NUMBER_SEND                                                 \
-  { 0x00, 0x07, 0x01, 0x00 }
-#define GET_SERIAL_NUMBER_ACK                                                  \
-  { 0x00, 0x07, 0x03 }
-#define GET_BATTERY_LEVEL_SEND                                                 \
-  { 0x02, 0x02, 0x01, 0x00 }
-#define GET_BATTERY_LEVEL_ACK                                                  \
-  { 0x02, 0x02, 0x03, 0x01 }
-#define GET_PAIRED_DEVICES_SEND                                                \
-  { 0x04, 0x04, 0x01, 0x00 }
-#define GET_PAIRED_DEVICES_ACK                                                 \
-  { 0x04, 0x04, 0x03 }
-#define INIT_CONNECTION_SEND                                                   \
-  { 0x00, 0x01, 0x01, 0x00 }
-#define INIT_CONNECTION_ACK                                                    \
-  { 0x00, 0x01, 0x03, 0x05 }
-#define SET_PARING_SEND_PACKAGE                                                \
-  { 0x04, 0x08, 0x05, 0x01, ANY }
-#define SET_PARING_ACK_PACKAGE                                                 \
-  { 0x04, 0x08, 0x06, 0x01, ANY }
-#define SET_SELF_VOICE_SEND_PACKAGE                                            \
-  { 0x01, 0x0b, 0x02, 0x02, 0x01, ANY, 0x38 }
-#define SET_SELF_VOICE_ACK_PACKAGE                                             \
-  { 0x01, 0x0b, 0x03, 0x03, 0x01, ANY, 0x0f }
-#define GET_DEVICE_INFO_SEND_PACKAGE                                           \
-  { 0x04, 0x05, 0x01, BT_ADDR_LEN }
-#define GET_DEVICE_INFO_ACK_PACKAGE                                            \
-  { 0x04, 0x05, 0x03 }
-#define CONNECT_DEVICE_SEND                                                    \
-  { 0x04, 0x01, 0x05, BT_ADDR_LEN + 1, 0x00 }
-#define CONNECT_DEVICE_ACK                                                     \
-  { 0x04, 0x01, 0x07, BT_ADDR_LEN }
-#define DISCONNECT_DEVICE_SEND                                                 \
-  { 0x04, 0x02, 0x05, BT_ADDR_LEN }
-#define DISCONNECT_DEVICE_ACK                                                  \
-  { 0x04, 0x02, 0x07, BT_ADDR_LEN }
-#define REMOVE_DEVICE_SEND                                                     \
-  { 0x04, 0x03, 0x05, BT_ADDR_LEN }
-#define REMOVE_DEVICE_ACK                                                      \
-  { 0x04, 0x03, 0x06, BT_ADDR_LEN }
-#define BYTES_POSITION_2  2
-#define BYTES_POSITION_3  3
-#define BYTES_POSITION_4  4
-#define BYTES_POSITION_5  5
-#define BYTES_POSITION_10 10
-#define BYTES_POSITION_11 11
+  {0xff, 0xff, 0xff, 0xff, 0x00, 0xff, 0x00, 0x00, 0xff}
+#define SET_PROMPT_LANGUAGE_SEND     {0x01, 0x03, 0x02, 0x01, ANY}
+#define GET_AUTO_OFF_ACK             {0x01, 0x04, 0x03, 0x01, ANY}
+#define GET_AUTO_OFF_MASK            {0xff, 0xff, 0xff, 0xff, 0x00}
+#define SET_AUTO_OFF_SEND            {0x01, 0x04, 0x02, 0x01, ANY}
+#define GET_NOISE_CANCELLING_ACK     {0x01, 0x06, 0x03, 0x02, ANY, 0x0b}
+#define GET_NOISE_CANCELLING_MASK    {0xff, 0xff, 0xff, 0xff, 0x00, 0xff}
+#define SET_NOISE_CANCELLING_SEND    {0x01, 0x06, 0x02, 0x01, ANY}
+#define NOISE_CANCELLING_14          0x4014
+#define NOISE_CANCELLING_20          0x4020
+#define NOISE_CANCELLING_0C          0x400c
+#define GET_DEVICE_STATUS_SEND       {0x01, 0x01, 0x05, 0x00}
+#define GET_DEVICE_STATUS_ACK        {0x01, 0x01, 0x07, 0x00}
+#define GET_FIRMWARE_VERSION_SEND    {0x00, 0x05, 0x01, 0x00}
+#define GET_FIRMWARE_VERSION_ACK     {0x00, 0x05, 0x03, 0x05}
+#define GET_SERIAL_NUMBER_SEND       {0x00, 0x07, 0x01, 0x00}
+#define GET_SERIAL_NUMBER_ACK        {0x00, 0x07, 0x03}
+#define GET_BATTERY_LEVEL_SEND       {0x02, 0x02, 0x01, 0x00}
+#define GET_BATTERY_LEVEL_ACK        {0x02, 0x02, 0x03, 0x01}
+#define GET_PAIRED_DEVICES_SEND      {0x04, 0x04, 0x01, 0x00}
+#define GET_PAIRED_DEVICES_ACK       {0x04, 0x04, 0x03}
+#define INIT_CONNECTION_SEND         {0x00, 0x01, 0x01, 0x00}
+#define INIT_CONNECTION_ACK          {0x00, 0x01, 0x03, 0x05}
+#define SET_PARING_SEND_PACKAGE      {0x04, 0x08, 0x05, 0x01, ANY}
+#define SET_PARING_ACK_PACKAGE       {0x04, 0x08, 0x06, 0x01, ANY}
+#define SET_SELF_VOICE_SEND_PACKAGE  {0x01, 0x0b, 0x02, 0x02, 0x01, ANY, 0x38}
+#define SET_SELF_VOICE_ACK_PACKAGE   {0x01, 0x0b, 0x03, 0x03, 0x01, ANY, 0x0f}
+#define GET_DEVICE_INFO_SEND_PACKAGE {0x04, 0x05, 0x01, BT_ADDR_LEN}
+#define GET_DEVICE_INFO_ACK_PACKAGE  {0x04, 0x05, 0x03}
+#define CONNECT_DEVICE_SEND          {0x04, 0x01, 0x05, BT_ADDR_LEN + 1, 0x00}
+#define CONNECT_DEVICE_ACK           {0x04, 0x01, 0x07, BT_ADDR_LEN}
+#define DISCONNECT_DEVICE_SEND       {0x04, 0x02, 0x05, BT_ADDR_LEN}
+#define DISCONNECT_DEVICE_ACK        {0x04, 0x02, 0x07, BT_ADDR_LEN}
+#define REMOVE_DEVICE_SEND           {0x04, 0x03, 0x05, BT_ADDR_LEN}
+#define REMOVE_DEVICE_ACK            {0x04, 0x03, 0x06, BT_ADDR_LEN}
+#define BYTES_POSITION_2             2
+#define BYTES_POSITION_3             3
+#define BYTES_POSITION_4             4
+#define BYTES_POSITION_5             5
+#define BYTES_POSITION_10            10
+#define BYTES_POSITION_11            11
 
 int has_noise_cancelling(unsigned int device_id) {
   switch (device_id) {
@@ -226,7 +190,7 @@ int set_name(int sock, const char *name) {
   size_t         length                 = strlen(name);
 
   send[BYTES_POSITION_3] = (uint8_t)length;
-  str_copy((char *)&send[CN_BASE_PACK_LEN], name, MAX_NAME_LEN);
+  strncpy((char *)&send[CN_BASE_PACK_LEN], name, MAX_NAME_LEN);
 
   size_t send_size = CN_BASE_PACK_LEN + length;
   int    status    = (int)write(sock, send, send_size);
@@ -545,7 +509,7 @@ int get_device_info(int sock, bdaddr_t address, struct Device *device) {
   static uint8_t       send[BYTES_POSITION_10] = GET_DEVICE_INFO_SEND_PACKAGE;
   static const uint8_t ack[]                   = GET_DEVICE_INFO_ACK_PACKAGE;
 
-  memory_copy(&send[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
+  memcpy(&send[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
 
   int status = write_check(sock, send, sizeof(send), ack, sizeof(ack));
   if (status) {
@@ -634,23 +598,23 @@ int get_paired_devices(int sock, bdaddr_t addresses[MAX_NUM_DEVICES],
 int connect_device(int sock, bdaddr_t address) {
   static uint8_t send[BYTES_POSITION_11] = CONNECT_DEVICE_SEND;
   static uint8_t ack[BYTES_POSITION_10]  = CONNECT_DEVICE_ACK;
-  memory_copy(&send[BYTES_POSITION_5], address.b, BT_ADDR_LEN);
-  memory_copy(&ack[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
+  memcpy(&send[BYTES_POSITION_5], address.b, BT_ADDR_LEN);
+  memcpy(&ack[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
   return write_check(sock, send, sizeof(send), ack, sizeof(ack));
 }
 
 int disconnect_device(int sock, bdaddr_t address) {
   static uint8_t send[BYTES_POSITION_10] = DISCONNECT_DEVICE_SEND;
   static uint8_t ack[BYTES_POSITION_10]  = DISCONNECT_DEVICE_ACK;
-  memory_copy(&send[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
-  memory_copy(&ack[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
+  memcpy(&send[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
+  memcpy(&ack[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
   return write_check(sock, send, sizeof(send), ack, sizeof(ack));
 }
 
 int remove_device(int sock, bdaddr_t address) {
   static uint8_t send[BYTES_POSITION_10] = REMOVE_DEVICE_SEND;
   static uint8_t ack[BYTES_POSITION_10]  = REMOVE_DEVICE_ACK;
-  memory_copy(&send[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
-  memory_copy(&ack[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
+  memcpy(&send[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
+  memcpy(&ack[BYTES_POSITION_4], address.b, BT_ADDR_LEN);
   return write_check(sock, send, sizeof(send), ack, sizeof(ack));
 }

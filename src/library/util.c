@@ -43,37 +43,6 @@ int str_to_byte(const char *str, uint8_t *byte) {
   return 0;
 }
 
-void str_copy(char *to, const char *from, int size) {
-  const int ascii_null_character  = 0;
-  const int ascii_space_character = 32;
-  to[size]                        = 0;
-
-  for (unsigned int position = 0; position < size; position++) {
-
-    if (from[position] == ascii_null_character) {
-      to[position] = from[position];
-      return;
-    }
-
-    if (from[position] > ascii_space_character ||
-        from[position] < ascii_null_character) {
-      to[position] = from[position];
-    }
-  }
-}
-
-void memory_copy(uint8_t *to, const uint8_t *from, int size) {
-  for (unsigned int position = 0; position < size; position++) {
-    to[position] = from[position];
-  }
-}
-
-void memory_set(bdaddr_t *target, uint8_t constant_byte, size_t size) {
-  for (unsigned int position = 0; position < size; position++) {
-    target->b[position] = constant_byte;
-  }
-}
-
 void unit_to_hex_string(int number, char *dest) {
   const int dest_size = 3;
 
@@ -110,5 +79,5 @@ void unit_to_hex_string(int number, char *dest) {
     return;
   }
 
-  str_copy(dest, p, src_size);
+  strncpy(dest, p, src_size);
 }
