@@ -10,7 +10,7 @@ int main() { return panel_loop(); }
 #include <time.h>
 #include <unistd.h>
 
-#include "library/bose.h"
+#include "library/cli.h"
 
 int main(int argc, char *argv[]) {
   static const char         *short_opt  = "hidfsban:n:o:c:l:v:p:e:";

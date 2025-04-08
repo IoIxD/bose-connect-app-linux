@@ -2,7 +2,16 @@
 #include "panels.h"
 #include <gtk/gtk.h>
 
-void lmao(GtkWidget *app, gpointer user_data) { printf("%s\n", user_data); }
+void device_select(GtkWidget *app, gpointer user_data) {
+  struct DeviceInfo *device = (struct DeviceInfo *)user_data;
+
+  currentDevice = device;
+
+  printf("name %s\n", device->name);
+  printf("address %s\n", device->address);
+
+  set_info_panel(app, user_data);
+}
 
 void set_connection_panel(GtkWidget *app, gpointer user_data) {
   pthread_mutex_lock(&gtk_mutex);
@@ -15,14 +24,12 @@ void set_connection_panel(GtkWidget *app, gpointer user_data) {
 
   gtk_box_append(GTK_BOX(vbox), gtk_label_new("Choose BOSE Headset"));
 
-  bluetooth_get_names(bluetooth_names, bluetooth_addresses, &bluetooth_arr_len,
-                      255);
+  bluetooth_get_names(devices, &bluetooth_arr_len, 255);
 
   for (int i = 0; i < bluetooth_arr_len; i++) {
-    GtkWidget *button = gtk_button_new_with_label(bluetooth_names[i]);
+    GtkWidget *button = gtk_button_new_with_label(devices[i].name);
     gtk_box_append(GTK_BOX(vbox), button);
-    g_signal_connect(button, "clicked", G_CALLBACK(lmao),
-                     &bluetooth_addresses[i]);
+    g_signal_connect(button, "clicked", G_CALLBACK(device_select), &devices[i]);
   }
 
   gtk_box_append(GTK_BOX(vbox), gtk_separator_new(GTK_ORIENTATION_VERTICAL));

@@ -9,7 +9,7 @@
 
 #include "based.h"
 #include "bluetooth.h"
-#include "bose.h"
+#include "cli.h"
 #include "util.h"
 
 #define OPTION_DEVICE_ID         5
@@ -127,7 +127,7 @@ int do_get_information(char *address) {
 }
 
 int do_set_name(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -148,7 +148,7 @@ int do_set_name(char *address, const char *arg) {
 }
 
 int do_set_prompt_language(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -179,7 +179,7 @@ int get_voice_status(const char *arg) {
 }
 
 int do_set_voice_prompts(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -198,7 +198,7 @@ int do_set_voice_prompts(char *address, const char *arg) {
 }
 
 int do_set_auto_off(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -255,7 +255,7 @@ enum NoiseCancelling get_noise_cancelling(const char *arg) {
 }
 
 int do_set_noise_cancelling(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -342,7 +342,7 @@ char *get_language_string(enum PromptLanguage language) {
 }
 
 int do_get_device_status(char *address) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -421,7 +421,7 @@ enum Pairing get_paring_status(const char *arg) {
 }
 
 int do_set_pairing(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -459,7 +459,7 @@ enum SelfVoice get_self_voice_status(const char *arg) {
 }
 
 int do_set_self_voice(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -477,7 +477,7 @@ int do_set_self_voice(char *address, const char *arg) {
 }
 
 int do_get_firmware_version(char *address) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -496,7 +496,7 @@ int do_get_firmware_version(char *address) {
 }
 
 int do_get_serial_number(char *address) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -515,7 +515,8 @@ int do_get_serial_number(char *address) {
 }
 
 int do_get_battery_level(char *address) {
-  int sock = get_socket(address);
+
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -560,7 +561,7 @@ char get_paired_device_status(enum DeviceStatus status) {
   return ':';
 }
 int do_get_paired_devices(char *address) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -618,7 +619,7 @@ int do_get_paired_devices(char *address) {
 }
 
 int do_connect_device(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -632,7 +633,7 @@ int do_connect_device(char *address, const char *arg) {
 }
 
 int do_disconnect_device(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -645,7 +646,7 @@ int do_disconnect_device(char *address, const char *arg) {
 }
 
 int do_remove_device(char *address, const char *arg) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -658,7 +659,7 @@ int do_remove_device(char *address, const char *arg) {
 }
 
 int do_get_device_id(char *address) {
-  int sock = get_socket(address);
+  int sock = socket_init(address);
   if (sock == -1) {
     return 1;
   }
@@ -679,7 +680,7 @@ int do_get_device_id(char *address) {
 
 int do_send_packet(char *address, const char *arg) {
   int char_type_pointer_size = sizeof(char *);
-  int sock                   = get_socket(address);
+  int sock                   = socket_init(address);
 
   if (sock == -1) {
     return 1;
@@ -706,47 +707,4 @@ int do_send_packet(char *address, const char *arg) {
 
   close(sock);
   return 0;
-}
-
-int get_socket(char *address) {
-  static const struct timeval send_timeout    = {5, 0};
-  static const struct timeval receive_timeout = {1, 0};
-  int sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
-
-  if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &send_timeout,
-                 sizeof(send_timeout)) < 0) {
-    perror("Could not set socket send timeout");
-    close(sock);
-    return -1;
-  }
-
-  if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &receive_timeout,
-                 sizeof(receive_timeout)) < 0) {
-    perror("Could not set socket receive timeout");
-    close(sock);
-    return -1;
-  }
-
-  struct sockaddr_rc sock_address;
-  sock_address.rc_family  = AF_BLUETOOTH;
-  sock_address.rc_channel = BOSE_CHANNEL;
-  if (str2ba(address, &sock_address.rc_bdaddr) != 0) {
-    fprintf(stderr, "Invalid bluetooth sock_address: %s\n", address);
-    close(sock);
-    return -1;
-  }
-  if (connect(sock, (struct sockaddr *)&sock_address, sizeof(sock_address)) !=
-      0) {
-    perror("Could not connect to Bluetooth device");
-    close(sock);
-    return -1;
-  }
-
-  int connection = init_connection(sock);
-  if (connection) {
-    close(sock);
-    return -1;
-  }
-
-  return sock;
 }

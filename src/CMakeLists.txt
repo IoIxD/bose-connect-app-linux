@@ -68,45 +68,40 @@ include_directories(${CMAKE_SOURCE_DIR}/bluez_inc)
 
 endif()
 
+include(FetchContent)
+FetchContent_Declare(gattlib
+    GIT_REPOSITORY https://github.com/labapart/gattlib/
+    GIT_TAG 1580056bce260f0d8ad7ccc8b105c34057cd1fbd
+)
+FetchContent_MakeAvailable(gattlib)
+
 # ------------------------------------------------------
 # Add the executable.
 # ------------------------------------------------------
+
+FILE(GLOB REGULAR_SOURCES main.c library/cli.c library/cli.h library/based.c library/based.h library/bluetooth.c library/bluetooth.h library/util.c library/util.h)
+FILE(GLOB GUI_SOURCES bluez_inc/binc/adapter.c bluez_inc/binc/advertisement.c bluez_inc/binc/agent.c bluez_inc/binc/application.c bluez_inc/binc/characteristic.c bluez_inc/binc/descriptor.c bluez_inc/binc/device.c bluez_inc/binc/logger.c bluez_inc/binc/parser.c bluez_inc/binc/service.c bluez_inc/binc/utility.c gtk/bluetooth.c gtk/panels.c gtk/connection_panel.c gtk/info_panel.c)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_definitions(PROGRAM_NAME="${PROJECT_NAME}")
 if(WITH_GUI)
 add_compile_definitions(WITH_GUI=1)
 endif()
 
+if(WITH_GUI)
 add_executable(
-        ${PROJECT_NAME}
-        main.c
-        library/bose.c
-        library/bose.h
-        library/based.c
-        library/based.h
-        library/bluetooth.c
-        library/bluetooth.h
-        library/util.c
-        library/util.h
-
-        bluez_inc/binc/adapter.c
-        bluez_inc/binc/advertisement.c
-        bluez_inc/binc/agent.c
-        bluez_inc/binc/application.c
-        bluez_inc/binc/characteristic.c
-        bluez_inc/binc/descriptor.c
-        bluez_inc/binc/device.c
-        bluez_inc/binc/logger.c
-        bluez_inc/binc/parser.c
-        bluez_inc/binc/service.c
-        bluez_inc/binc/utility.c
-
-        gtk/bluetooth.c
-        gtk/connection_panel.c
-        gtk/panels.c
-
-        )
-target_link_libraries(${PROJECT_NAME} bluetooth PkgConfig::GTK4 m)
+    ${PROJECT_NAME}
+    ${REGULAR_SOURCES}
+    ${GUI_SOURCES}
+)
+target_link_libraries(${PROJECT_NAME} bluetooth PkgConfig::GTK4 m gattlib)
+else()
+add_executable(
+    ${PROJECT_NAME}
+    ${REGULAR_SOURCES}
+)
+target_link_libraries(${PROJECT_NAME} bluetooth gattlib)
+endif()
 get_target_property(PROJECT_SOURCES ${PROJECT_NAME} SOURCES)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 

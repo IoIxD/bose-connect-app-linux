@@ -126,4 +126,6 @@ int disconnect_device(int sock, bdaddr_t address);
 
 int remove_device(int sock, bdaddr_t address);
 
+int socket_init(char *address);
+
 #endif

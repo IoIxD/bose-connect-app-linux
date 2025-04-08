@@ -1,8 +1,6 @@
 #ifndef BOSE_CONNECT_APP_LINUX_SRC_MAIN_H
 #define BOSE_CONNECT_APP_LINUX_SRC_MAIN_H
 
-int get_socket(char *address);
-
 void usage();
 int  do_get_information(char *address);
 int  do_set_name(char *address, const char *arg);

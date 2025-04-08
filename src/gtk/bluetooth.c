@@ -3,6 +3,7 @@
 #include "binc/device.h"
 #include "binc/forward_decl.h"
 #include "binc/logger.h"
+#include "panels.h"
 #include <bits/pthreadtypes.h>
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -125,8 +126,8 @@ void *bluetooth_thread_start() {
   return NULL;
 }
 
-void bluetooth_get_names(char names[255][255], char addresses[255][255],
-                         size_t *len, size_t max_len) {
+void bluetooth_get_names(struct DeviceInfo devices[255], size_t *len,
+                         size_t max_len) {
   pthread_mutex_lock(&array_mutex);
   pthread_mutex_lock(&dbus_mutex);
 
@@ -134,7 +135,8 @@ void bluetooth_get_names(char names[255][255], char addresses[255][255],
 
   if (device_array != NULL) {
     int n = 0;
-    *len  = 0;
+
+    *len = 0;
 
     for (int i = 0; i < device_array->len && i < max_len; i++) {
       Adapter *adapter = (Adapter *)g_ptr_array_index(device_array, i);
@@ -143,8 +145,8 @@ void bluetooth_get_names(char names[255][255], char addresses[255][255],
       while (list != NULL) {
         Device *dev = (Device *)list->data;
 
-        strncpy(names[n], binc_device_get_name(dev), 255);
-        strncpy(addresses[n], binc_device_get_address(dev), 255);
+        strncpy(devices[n].name, binc_device_get_name(dev), 255);
+        strncpy(devices[n].address, binc_device_get_address(dev), 255);
 
         list = list->next;
 

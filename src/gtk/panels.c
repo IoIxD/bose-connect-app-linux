@@ -7,9 +7,8 @@ GtkWidget      *window;
 GtkWidget      *reloadButton;
 pthread_mutex_t gtk_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-char   bluetooth_names[255][255];
-char   bluetooth_addresses[255][255];
-size_t bluetooth_arr_len;
+struct DeviceInfo devices[255];
+size_t            bluetooth_arr_len = 0;
 
 void activate(GtkApplication *app, gpointer user_data) {
   window = gtk_application_window_new(app);
