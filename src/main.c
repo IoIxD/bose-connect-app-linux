@@ -1,3 +1,8 @@
+#if WITH_GUI
+#include "gtk/panels.h"
+
+int main() { return panel_loop(); }
+#else
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/rfcomm.h>
 #include <getopt.h>
@@ -126,3 +131,5 @@ int main(int argc, char *argv[]) {
 
   return status;
 }
+
+#endif

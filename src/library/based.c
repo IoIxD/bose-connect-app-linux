@@ -204,59 +204,59 @@ int set_name(int sock, const char *name) {
     return status;
   }
 
-  return abs(strcmp(name, got_name));
+  return abs(strncmp(name, got_name, 255));
 }
 
 enum PromptLanguage get_language(const char *language) {
-  if (strcmp(language, "en") == 0) {
+  if (strncmp(language, "en", 2) == 0) {
     return PL_EN;
   }
 
-  if (strcmp(language, "fr") == 0) {
+  if (strncmp(language, "fr", 2) == 0) {
     return PL_FR;
   }
 
-  if (strcmp(language, "it") == 0) {
+  if (strncmp(language, "it", 2) == 0) {
     return PL_IT;
   }
 
-  if (strcmp(language, "de") == 0) {
+  if (strncmp(language, "de", 2) == 0) {
     return PL_DE;
   }
 
-  if (strcmp(language, "es") == 0) {
+  if (strncmp(language, "es", 2) == 0) {
     return PL_ES;
   }
 
-  if (strcmp(language, "pt") == 0) {
+  if (strncmp(language, "pt", 2) == 0) {
     return PL_PT;
   }
 
-  if (strcmp(language, "zh") == 0) {
+  if (strncmp(language, "zh", 2) == 0) {
     return PL_ZH;
   }
 
-  if (strcmp(language, "ko") == 0) {
+  if (strncmp(language, "ko", 2) == 0) {
     return PL_KO;
   }
 
-  if (strcmp(language, "pl") == 0) {
+  if (strncmp(language, "pl", 2) == 0) {
     return PL_RU;
   }
 
-  if (strcmp(language, "ru") == 0) {
+  if (strncmp(language, "ru", 2) == 0) {
     return PL_PL;
   }
 
-  if (strcmp(language, "nl") == 0) {
+  if (strncmp(language, "nl", 2) == 0) {
     return PL_NL;
   }
 
-  if (strcmp(language, "ja") == 0) {
+  if (strncmp(language, "ja", 2) == 0) {
     return PL_JA;
   }
 
-  if (strcmp(language, "sv") == 0) {
+  if (strncmp(language, "sv", 2) == 0) {
     return PL_SV;
   }
 

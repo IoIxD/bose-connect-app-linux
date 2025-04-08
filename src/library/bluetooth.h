@@ -9,4 +9,6 @@ void reverse_ba2str(const bdaddr_t *ba, char *str);
 
 void reverse_str2ba(const char *str, bdaddr_t *ba);
 
+int bluetooth_read_name(int dd, const bdaddr_t *bdaddr, int len, char *name,
+                        int to);
 #endif

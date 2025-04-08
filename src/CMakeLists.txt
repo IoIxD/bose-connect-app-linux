@@ -6,8 +6,15 @@ set(PROJECT_NAME bose-connect-app-linux)
 project(${PROJECT_NAME} VERSION 1.0)
 
 # Specify the C standard.
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_)
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
+
+
+# ------------------------------------------------------
+# Option
+# ------------------------------------------------------
+option(WITH_GUI "Build with GUI (default)" ON)
 
 
 # ------------------------------------------------------
@@ -35,6 +42,12 @@ pkg_check_modules(BLUEZ REQUIRED bluez)
 include_directories(${BLUEZ_INCLUDE_DIR})
 link_directories(${BLUEZ_LIBRARIES})
 
+if(WITH_GUI)
+
+if(NOT CMAKE_C_COMPILER MATCHES "gcc")
+message(WARNING "There is a known issue compiling the GUI version under Clang. Please prefix your cmake command with \"CC=gcc\"  (https://github.com/weliem/bluez_inc/issues/95)")
+endif()
+
 
 # ------------------------------------------------------
 # Check GTK4
@@ -48,15 +61,22 @@ elseif (NOT GTK4_VERSION)
 endif ()
 
 pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
-include_directories(${GTK4_INCLUDE_DIR})
-link_directories(${GTK4_LIBRARIES})
+include_directories(${GTK4_INCLUDE_DIRS})
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/bluez_inc)
+include_directories(${CMAKE_SOURCE_DIR}/bluez_inc)
+
+endif()
 
 # ------------------------------------------------------
 # Add the executable.
 # ------------------------------------------------------
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_definitions(PROGRAM_NAME="${PROJECT_NAME}")
+if(WITH_GUI)
+add_compile_definitions(WITH_GUI=1)
+endif()
+
 add_executable(
         ${PROJECT_NAME}
         main.c
@@ -67,8 +87,26 @@ add_executable(
         library/bluetooth.c
         library/bluetooth.h
         library/util.c
-        library/util.h)
-target_link_libraries(${PROJECT_NAME} bluetooth)
+        library/util.h
+
+        bluez_inc/binc/adapter.c
+        bluez_inc/binc/advertisement.c
+        bluez_inc/binc/agent.c
+        bluez_inc/binc/application.c
+        bluez_inc/binc/characteristic.c
+        bluez_inc/binc/descriptor.c
+        bluez_inc/binc/device.c
+        bluez_inc/binc/logger.c
+        bluez_inc/binc/parser.c
+        bluez_inc/binc/service.c
+        bluez_inc/binc/utility.c
+
+        gtk/bluetooth.c
+        gtk/connection_panel.c
+        gtk/panels.c
+
+        )
+target_link_libraries(${PROJECT_NAME} bluetooth PkgConfig::GTK4 m)
 get_target_property(PROJECT_SOURCES ${PROJECT_NAME} SOURCES)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 

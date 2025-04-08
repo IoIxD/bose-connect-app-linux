@@ -167,11 +167,11 @@ int do_set_prompt_language(char *address, const char *arg) {
 }
 
 int get_voice_status(const char *arg) {
-  if (strcmp(arg, "on") == 0) {
+  if (strncmp(arg, "on", 2) == 0) {
     return 1;
   }
 
-  if (strcmp(arg, "off") == 0) {
+  if (strncmp(arg, "off", 3) == 0) {
     return 0;
   }
 
@@ -227,7 +227,7 @@ int do_set_auto_off(char *address, const char *arg) {
     ao = (enum AutoOff)parsed;
     break;
   default:
-    if (strcmp(arg, "never") != 0) {
+    if (strncmp(arg, "never", 5) != 0) {
       fprintf(stderr, "Invalid auto-off argument: %s\n", arg);
       usage();
       return 1;
@@ -239,15 +239,15 @@ int do_set_auto_off(char *address, const char *arg) {
 }
 
 enum NoiseCancelling get_noise_cancelling(const char *arg) {
-  if (strcmp(arg, "high") == 0) {
+  if (strncmp(arg, "high", 4) == 0) {
     return NC_HIGH;
   }
 
-  if (strcmp(arg, "low") == 0) {
+  if (strncmp(arg, "low", 3) == 0) {
     return NC_LOW;
   }
 
-  if (strcmp(arg, "off") == 0) {
+  if (strncmp(arg, "off", 3) == 0) {
     return NC_OFF;
   }
 
@@ -364,7 +364,7 @@ int do_get_device_status(char *address) {
   char  unknown_language[] = "Unknown [0x00]";
   char *language           = get_language_string((promptLanguage & VP_MASK));
 
-  if (strcmp("", language) == 0) {
+  if (strncmp("", language, 0) == 0) {
     char      language_value[4]  = "";
     const int position_hex_value = 11;
 
@@ -409,11 +409,11 @@ int do_get_device_status(char *address) {
 }
 
 enum Pairing get_paring_status(const char *arg) {
-  if (strcmp(arg, "on") == 0) {
+  if (strncmp(arg, "on", 2) == 0) {
     return P_ON;
   }
 
-  if (strcmp(arg, "off") == 0) {
+  if (strncmp(arg, "off", 3) == 0) {
     return P_OFF;
   }
 
@@ -439,19 +439,19 @@ int do_set_pairing(char *address, const char *arg) {
 }
 
 enum SelfVoice get_self_voice_status(const char *arg) {
-  if (strcmp(arg, "high") == 0) {
+  if (strncmp(arg, "high", 4) == 0) {
     return SV_HIGH;
   }
 
-  if (strcmp(arg, "medium") == 0) {
+  if (strncmp(arg, "medium", 6) == 0) {
     return SV_MEDIUM;
   }
 
-  if (strcmp(arg, "low") == 0) {
+  if (strncmp(arg, "low", 3) == 0) {
     return SV_LOW;
   }
 
-  if (strcmp(arg, "off") == 0) {
+  if (strncmp(arg, "off", 3) == 0) {
     return SV_OFF;
   }
 

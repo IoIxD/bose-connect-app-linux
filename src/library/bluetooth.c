@@ -1,3 +1,8 @@
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/hci.h>
+#include <bluetooth/hci_lib.h>
+#include <errno.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "bluetooth.h"
