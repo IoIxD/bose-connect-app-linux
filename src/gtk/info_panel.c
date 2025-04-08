@@ -1,5 +1,5 @@
 #include "../library/based.h"
-#include "panels.h"
+#include "gtk.h"
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkshortcut.h>

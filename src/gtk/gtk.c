@@ -1,5 +1,6 @@
-#include "panels.h"
+#include "gtk.h"
 #include "bluetooth.h"
+#include <sys/queue.h>
 
 pthread_t bluetooth_thread;
 

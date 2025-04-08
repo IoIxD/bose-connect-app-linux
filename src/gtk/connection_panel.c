@@ -1,5 +1,5 @@
 #include "bluetooth.h"
-#include "panels.h"
+#include "gtk.h"
 #include <gtk/gtk.h>
 
 void device_select(GtkWidget *app, gpointer user_data) {

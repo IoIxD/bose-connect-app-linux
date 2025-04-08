@@ -44,11 +44,6 @@ link_directories(${BLUEZ_LIBRARIES})
 
 if(WITH_GUI)
 
-if(NOT CMAKE_C_COMPILER MATCHES "gcc")
-message(WARNING "There is a known issue compiling the GUI version under Clang. Please prefix your cmake command with \"CC=gcc\"  (https://github.com/weliem/bluez_inc/issues/95)")
-endif()
-
-
 # ------------------------------------------------------
 # Check GTK4
 # ------------------------------------------------------
@@ -63,8 +58,6 @@ endif ()
 pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
 include_directories(${GTK4_INCLUDE_DIRS})
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/bluez_inc)
-include_directories(${CMAKE_SOURCE_DIR}/bluez_inc)
 
 endif()
 
@@ -75,12 +68,21 @@ FetchContent_Declare(gattlib
 )
 FetchContent_MakeAvailable(gattlib)
 
+FetchContent_GetProperties(gattlib
+    SOURCE_DIR GATTLIB_SOURCE_DIR
+    BINARY_DIR GATTLIB_BINARY_DIR
+)
+
+message(STATUS ${GATTLIB_BINARY_DIR})
+include_directories(${GATTLIB_BINARY_DIR}/dbus)
+link_directories(${GATTLIB_BINARY_DIR})
+
 # ------------------------------------------------------
 # Add the executable.
 # ------------------------------------------------------
 
 FILE(GLOB REGULAR_SOURCES main.c library/cli.c library/cli.h library/based.c library/based.h library/bluetooth.c library/bluetooth.h library/util.c library/util.h)
-FILE(GLOB GUI_SOURCES bluez_inc/binc/adapter.c bluez_inc/binc/advertisement.c bluez_inc/binc/agent.c bluez_inc/binc/application.c bluez_inc/binc/characteristic.c bluez_inc/binc/descriptor.c bluez_inc/binc/device.c bluez_inc/binc/logger.c bluez_inc/binc/parser.c bluez_inc/binc/service.c bluez_inc/binc/utility.c gtk/bluetooth.c gtk/panels.c gtk/connection_panel.c gtk/info_panel.c)
+FILE(GLOB GUI_SOURCES gtk/bluetooth.c gtk/gtk.c gtk/connection_panel.c gtk/info_panel.c)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_definitions(PROGRAM_NAME="${PROJECT_NAME}")

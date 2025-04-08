@@ -1,5 +1,6 @@
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/rfcomm.h>
+#include <org-bluez-battery1.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -37,8 +38,6 @@
 #define GET_FIRMWARE_VERSION_ACK     {0x00, 0x05, 0x03, 0x05}
 #define GET_SERIAL_NUMBER_SEND       {0x00, 0x07, 0x01, 0x00}
 #define GET_SERIAL_NUMBER_ACK        {0x00, 0x07, 0x03}
-#define GET_BATTERY_LEVEL_SEND       {0x02, 0x02, 0x01, 0x00}
-#define GET_BATTERY_LEVEL_ACK        {0x02, 0x02, 0x03, 0x01}
 #define GET_PAIRED_DEVICES_SEND      {0x04, 0x04, 0x01, 0x00}
 #define GET_PAIRED_DEVICES_ACK       {0x04, 0x04, 0x03}
 #define INIT_CONNECTION_SEND         {0x00, 0x01, 0x01, 0x00}
@@ -492,17 +491,9 @@ int get_serial_number(int sock, char serial[MAX_SERIAL_SIZE]) {
 }
 
 int get_battery_level(int sock, unsigned int *level) {
-  static const uint8_t send[] = GET_BATTERY_LEVEL_SEND;
-  static const uint8_t ack[]  = GET_BATTERY_LEVEL_ACK;
-
-  int status = write_check(sock, send, sizeof(send), ack, sizeof(ack));
-  if (status) {
-    return status;
-  }
 
   uint8_t level_byte = 0;
-  (void)read(sock, &level_byte, 1);
-  *level = level_byte;
+  *level             = level_byte;
 
   return 0;
 }

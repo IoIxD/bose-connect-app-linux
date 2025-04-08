@@ -2,8 +2,8 @@
 #include <gtk/gtk.h>
 #include <pthread.h>
 
-#ifndef __PANELS_H
-#define __PANELS_H
+#ifndef __GTK_H
+#define __GTK_H
 
 extern pthread_t bluetooth_thread;
 

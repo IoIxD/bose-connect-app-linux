@@ -1,7 +1,7 @@
 #ifndef __GTK_BLUETOOTH_H
 #define __GTK_BLUETOOTH_H
 
-#include "panels.h"
+#include "gtk.h"
 #include <gtk/gtk.h>
 
 void *bluetooth_thread_start();

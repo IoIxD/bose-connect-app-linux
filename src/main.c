@@ -1,5 +1,5 @@
 #if WITH_GUI
-#include "gtk/panels.h"
+#include "gtk/gtk.h"
 
 int main() { return panel_loop(); }
 #else
