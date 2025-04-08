@@ -1,5 +1,7 @@
 #include "gtk.h"
 #include "bluetooth.h"
+#include <glib.h>
+#include <string.h>
 #include <sys/queue.h>
 
 pthread_t bluetooth_thread;
@@ -22,8 +24,6 @@ void activate(GtkApplication *app, gpointer user_data) {
 }
 
 int panel_loop() {
-  pthread_create(&bluetooth_thread, NULL, bluetooth_thread_start, NULL);
-
   GtkApplication *app;
   int             status;
 

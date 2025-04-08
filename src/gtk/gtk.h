@@ -10,6 +10,7 @@ extern pthread_t bluetooth_thread;
 extern GtkWidget      *window;
 extern GtkWidget      *reloadButton;
 extern pthread_mutex_t gtk_mutex;
+extern pthread_mutex_t tired_mutex;
 
 extern int headphone_socket;
 
